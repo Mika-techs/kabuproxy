@@ -164,6 +164,31 @@
     markNow();
     setInterval(markNow, 60 * 1000);
 
+    // ---- click a lesson: highlight every lesson of the same group (custom name, else subject + teacher) ----
+    var highlighted = null;
+    function highlight(group) {
+        highlighted = group;
+        document.querySelectorAll('.timetable, .daylist').forEach(function (list) {
+            list.classList.toggle('has-highlight', group !== null);
+        });
+        document.querySelectorAll('.lesson[data-group]').forEach(function (el) {
+            el.classList.toggle('is-highlighted', group !== null && el.dataset.group === group);
+        });
+    }
+    document.addEventListener('click', function (e) {
+        var lesson = e.target.closest ? e.target.closest('.lesson[data-group]') : null;
+        if (lesson && lesson.dataset.group && lesson.dataset.group !== highlighted) {
+            highlight(lesson.dataset.group);
+        } else if (highlighted !== null) {
+            highlight(null);
+        }
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && highlighted !== null) {
+            highlight(null);
+        }
+    });
+
     // ---- countdown to the next (not cancelled) lesson of today, and to the end of the running one ----
     var nextup = document.getElementById('nextup');
     if (nextup) {

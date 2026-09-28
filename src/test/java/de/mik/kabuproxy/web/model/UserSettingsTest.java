@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UserSettingsTest
@@ -150,5 +151,20 @@ class UserSettingsTest
         assertEquals("Anwendungsentwicklung", settings.lessonName("AEuP", null));
         assertEquals("Deutsch", settings.lessonName("Deutsch", "HEC"));
         assertNull(settings.lessonName(null, "RAH"));
+    }
+
+    @Test
+    void groupsLessonsByNameOrSubjectAndTeacher()
+    {
+        UserSettings settings = new UserSettings(null, null, null, null, Map.of(
+            LessonKey.of("AEuP"), "Anwendungsentwicklung",
+            new LessonKey("AEuP", "RAH"), "Web",
+            new LessonKey("IT", "HEC"), "Web"));
+        assertEquals(settings.lessonGroup("AEuP", "RAH"), settings.lessonGroup("IT", "HEC"));
+        assertEquals(settings.lessonGroup("AEuP", "SCH"), settings.lessonGroup("AEuP", "MUE"));
+        assertEquals(settings.lessonGroup("Deutsch", "HEC"), settings.lessonGroup(" Deutsch", "HEC "));
+        assertNotEquals(settings.lessonGroup("Deutsch", "HEC"), settings.lessonGroup("Deutsch", "MUE"));
+        assertNotEquals(settings.lessonGroup("IT", "HEC"), settings.lessonGroup("IT", "MUE"));
+        assertEquals("", settings.lessonGroup(null, "RAH"));
     }
 }

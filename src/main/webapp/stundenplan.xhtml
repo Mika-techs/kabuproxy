@@ -114,7 +114,7 @@
                             <div class="day__break" style="#{b.breakStyle}" title="#{msg['timetable.break']} #{b.breakLabel}"></div>
                         </ui:repeat>
                         <ui:repeat value="#{d.lessons}" var="l">
-                            <article class="#{l.cssClass} #{l.singlePeriod ? 'lesson--short' : ''}" style="#{l.gridStyle};#{theme.settings.lessonStyle(l.subject, l.teacher)}" data-time="#{l.timeLabel}">
+                            <article class="#{l.cssClass} #{l.singlePeriod ? 'lesson--short' : ''}" style="#{l.gridStyle};#{theme.settings.lessonStyle(l.subject, l.teacher)}" data-time="#{l.timeLabel}" data-group="#{theme.settings.lessonGroup(l.subject, l.teacher)}">
                                 <div class="lesson__subject" title="#{l.subject}">#{theme.settings.lessonName(l.subject, l.teacher)}</div>
                                 <div class="lesson__meta">
                                     <span>#{l.teacher}</span>
@@ -146,7 +146,7 @@
                                 <ui:fragment rendered="#{not empty l.breakBefore}">
                                     <li class="daycard__break">#{msg['timetable.break']} · #{l.breakBefore}</li>
                                 </ui:fragment>
-                                <li class="#{l.cssClass}" style="#{theme.settings.lessonStyle(l.subject, l.teacher)}" data-time="#{l.timeLabel}">
+                                <li class="#{l.cssClass}" style="#{theme.settings.lessonStyle(l.subject, l.teacher)}" data-time="#{l.timeLabel}" data-group="#{theme.settings.lessonGroup(l.subject, l.teacher)}">
                                     <span class="row__period">#{l.periodLabel}</span>
                                     <span class="row__time">#{l.timeLabel}</span>
                                     <span class="row__subject" title="#{l.subject}">#{theme.settings.lessonName(l.subject, l.teacher)}</span>

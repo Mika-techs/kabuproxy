@@ -190,6 +190,24 @@ public record UserSettings(ThemeMode themeMode, String accentColor, Map<String, 
     }
 
     /**
+     * What a clicked lesson highlights (kabu.js, {@code data-group}): all lessons showing the same custom name, or – while
+     * no name is set – the same subject with the same teacher.
+     */
+    public String lessonGroup(String subject, String teacher)
+    {
+        if (subject == null)
+        {
+            return "";
+        }
+        LessonKey key = new LessonKey(subject, teacher);
+        if (lessonNames.containsKey(key) || lessonNames.containsKey(LessonKey.of(subject)))
+        {
+            return "name:" + lessonName(subject, teacher);
+        }
+        return "lesson:" + key.getSubject() + "\u001f" + key.getTeacher();
+    }
+
+    /**
      * Inline style for a lesson: {@code --lesson-color}, which kabu.css turns into the side bar (lightened in dark mode);
      * empty when the lesson follows the accent.
      */

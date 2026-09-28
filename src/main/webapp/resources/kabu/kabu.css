@@ -353,6 +353,12 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 .lesson--cancelled .lesson__subject { text-decoration: line-through; color: var(--cancel); }
 .lesson--unknown::before { border-left-style: dashed; }
 .lesson.is-now { box-shadow: 0 0 0 2px var(--accent); }
+.lesson[data-group] { cursor: pointer; }
+/* clicked lesson group (kabu.js): the others fade, the matches get a ring in their own colour */
+.has-highlight .lesson { transition: opacity .15s; }
+.has-highlight .lesson:not(.is-highlighted) { opacity: .35; }
+.lesson.is-highlighted { box-shadow: inset 0 0 0 2px var(--lesson-bar); }
+.lesson.is-now.is-highlighted { box-shadow: 0 0 0 2px var(--accent), inset 0 0 0 2px var(--lesson-bar); }
 .lesson.is-now::after {
     content: "jetzt"; position: absolute; top: 5px; right: 6px;
     font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
