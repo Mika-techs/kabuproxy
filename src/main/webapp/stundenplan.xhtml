@@ -17,9 +17,15 @@
         <ui:fragment rendered="#{status.hasClass}">
 
             <div class="toolbar">
-                <h1 class="toolbar__title">
-                    #{msg['timetable.week']} <span class="muted">#{timetableController.week.label}</span>
-                </h1>
+                <div class="toolbar__lead">
+                    <h1 class="toolbar__title">
+                        #{msg['timetable.week']} <span class="muted">#{timetableController.week.label}</span>
+                    </h1>
+                    <a class="btn" href="https://portal.bycs.de/index.html" target="_blank" rel="noopener noreferrer">
+                        <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+                        #{msg['timetable.mebis']}
+                    </a>
+                </div>
                 <div class="weeknav" role="group" aria-label="#{msg['timetable.weekNav']}">
                     <a class="btn btn--icon" href="?week=#{timetableController.week.previous}" title="#{msg['timetable.previous']}" aria-label="#{msg['timetable.previous']}">‹</a>
                     <h:outputLink value="stundenplan.xhtml" styleClass="btn #{timetableController.currentWeek ? 'btn--active' : ''}">#{msg['timetable.thisWeek']}</h:outputLink>

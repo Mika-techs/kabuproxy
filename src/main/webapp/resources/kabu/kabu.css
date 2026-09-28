@@ -201,6 +201,8 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .toolbar__title { font-size: 1.45rem; margin-bottom: 4px; }
+.toolbar__lead { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.toolbar__lead .toolbar__title { margin-bottom: 0; }
 
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -215,6 +217,7 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 .btn--icon { width: 36px; padding: 0; font-size: 1.3rem; line-height: 1; }
 .btn--small { height: 30px; padding: 0 11px; font-size: .85rem; }
 .btn--ghost { background: transparent; box-shadow: none; }
+.btn__icon { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .weeknav { display: flex; gap: 6px; }
 
 .banner { border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px; border: 1px solid; }
