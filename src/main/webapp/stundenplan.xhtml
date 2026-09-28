@@ -50,6 +50,7 @@
                         <div class="changes__actions">
                             <a class="btn btn--ghost btn--small" href="#{request.contextPath}/aenderungen.xhtml">#{msg['changes.showAll']}</a>
                             <h:form>
+                                <input type="hidden" name="week" value="#{timetableController.week.monday()}"/>
                                 <h:commandButton value="#{msg['timetable.seen']}" action="#{timetableController.markSeen}" styleClass="btn btn--small"/>
                             </h:form>
                         </div>
