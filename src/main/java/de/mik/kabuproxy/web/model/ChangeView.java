@@ -5,7 +5,10 @@ import de.mik.kabuproxy.web.I18n;
 
 import java.util.Locale;
 
-public record ChangeView(String dayLabel, String periodLabel, ChangeType type, String before, String after, String detectedLabel)
+/**
+ * One detected lesson change; {@code unseen} = detected after the user last clicked "seen".
+ */
+public record ChangeView(String dayLabel, String periodLabel, ChangeType type, String before, String after, String detectedLabel, boolean unseen)
 {
     public String typeLabel()
     {
@@ -14,6 +17,6 @@ public record ChangeView(String dayLabel, String periodLabel, ChangeType type, S
 
     public String cssClass()
     {
-        return "change change--" + type.name().toLowerCase(Locale.ROOT);
+        return "change change--" + type.name().toLowerCase(Locale.ROOT) + (unseen ? " change--unseen" : "");
     }
 }

@@ -11,6 +11,7 @@ import de.mik.kabuproxy.persistence.repository.LessonRepository;
 import de.mik.kabuproxy.persistence.repository.SchoolClassRepository;
 import de.mik.kabuproxy.web.I18n;
 import de.mik.kabuproxy.web.model.CalendarEntryView;
+import de.mik.kabuproxy.web.model.ChangeDayView;
 import de.mik.kabuproxy.web.model.ChangeView;
 import de.mik.kabuproxy.web.model.DayView;
 import de.mik.kabuproxy.web.model.Formats;
@@ -144,23 +145,52 @@ public class TimetableQueryService
             return List.of();
         }
         LocalDate today = LocalDate.now(KabuConfig.ZONE);
-        Map<Integer, PeriodSlotEntity> slots = schoolClassRepository.findPeriods(classId).stream()
-            .collect(Collectors.toMap(PeriodSlotEntity::getPeriod, s -> s));
-        List<ChangeView> views = new ArrayList<>();
-        for (LessonChangeEntity change : lessonRepository.findChanges(classId, since, today))
+        Map<Integer, PeriodSlotEntity> slots = periodSlots(classId);
+        return lessonRepository.findChanges(classId, since, today).stream()
+            .map(change -> changeView(change, slots, true))
+            .toList();
+    }
+
+    /**
+     * The class's change log grouped by lesson day: from today on, or with {@code includePast} everything (latest days
+     * first). Changes detected after {@code seenAt} are marked unseen (none while the user never marked any as seen,
+     * like the timetable's box).
+     */
+    @Transactional
+    public List<ChangeDayView> changeLog(long classId, boolean includePast, Instant seenAt)
+    {
+        LocalDate today = LocalDate.now(KabuConfig.ZONE);
+        Map<Integer, PeriodSlotEntity> slots = periodSlots(classId);
+        Map<LocalDate, List<ChangeView>> byDay = new LinkedHashMap<>();
+        for (LessonChangeEntity change : lessonRepository.findChangeLog(classId, includePast ? null : today))
         {
-            String period = change.getPeriodFrom() == change.getPeriodTo()
-                ? I18n.text("timetable.period", change.getPeriodFrom())
-                : I18n.text("timetable.periods", change.getPeriodFrom(), change.getPeriodTo());
-            PeriodSlotEntity slot = slots.get(change.getPeriodFrom());
-            if (slot != null)
-            {
-                period += " · " + Formats.time(slot.getStartTime());
-            }
-            views.add(new ChangeView(Formats.weekdayShort(change.getDate()) + " " + Formats.dayMonth(change.getDate()), period, change.getChangeType(),
-                change.getBeforeText(), change.getAfterText(), Formats.relative(change.getDetectedAt())));
+            boolean unseen = seenAt != null && change.getDetectedAt().isAfter(seenAt);
+            byDay.computeIfAbsent(change.getDate(), k -> new ArrayList<>()).add(changeView(change, slots, unseen));
         }
-        return views;
+        return byDay.entrySet().stream()
+            .map(e -> new ChangeDayView(Formats.weekdayLong(e.getKey()) + ", " + Formats.date(e.getKey()), e.getKey().isBefore(today),
+                e.getKey().equals(today), e.getValue()))
+            .toList();
+    }
+
+    private Map<Integer, PeriodSlotEntity> periodSlots(long classId)
+    {
+        return schoolClassRepository.findPeriods(classId).stream()
+            .collect(Collectors.toMap(PeriodSlotEntity::getPeriod, s -> s));
+    }
+
+    private static ChangeView changeView(LessonChangeEntity change, Map<Integer, PeriodSlotEntity> slots, boolean unseen)
+    {
+        String period = change.getPeriodFrom() == change.getPeriodTo()
+            ? I18n.text("timetable.period", change.getPeriodFrom())
+            : I18n.text("timetable.periods", change.getPeriodFrom(), change.getPeriodTo());
+        PeriodSlotEntity slot = slots.get(change.getPeriodFrom());
+        if (slot != null)
+        {
+            period += " · " + Formats.time(slot.getStartTime());
+        }
+        return new ChangeView(Formats.weekdayShort(change.getDate()) + " " + Formats.dayMonth(change.getDate()), period, change.getChangeType(),
+            change.getBeforeText(), change.getAfterText(), Formats.relative(change.getDetectedAt()), unseen);
     }
 
     /**

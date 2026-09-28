@@ -8,6 +8,7 @@ import de.mik.kabuproxy.persistence.entities.SchoolClassEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 public class LessonRepository
 {
     private static final int MAX_CHANGES = 100;
+    private static final int MAX_CHANGE_LOG = 500;
 
     @PersistenceContext(unitName = "kabu")
     private EntityManager em;
@@ -84,5 +86,23 @@ public class LessonRepository
             .setParameter("fromDate", fromDate)
             .setMaxResults(MAX_CHANGES)
             .getResultList();
+    }
+
+    /**
+     * The class's change log: from {@code fromDate} on in lesson order, or (null) everything, latest lessons first.
+     */
+    public List<LessonChangeEntity> findChangeLog(long classId, LocalDate fromDate)
+    {
+        String order = fromDate == null ? " order by c.date desc, c.periodFrom, c.detectedAt" : " order by c.date, c.periodFrom, c.detectedAt";
+        TypedQuery<LessonChangeEntity> query = em.createQuery("select c from LessonChangeEntity c where c.schoolClass.id = :classId"
+                    + (fromDate == null ? "" : " and c.date >= :fromDate") + order,
+                LessonChangeEntity.class)
+            .setParameter("classId", classId)
+            .setMaxResults(MAX_CHANGE_LOG);
+        if (fromDate != null)
+        {
+            query.setParameter("fromDate", fromDate);
+        }
+        return query.getResultList();
     }
 }

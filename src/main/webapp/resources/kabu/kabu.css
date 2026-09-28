@@ -257,6 +257,17 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 .change--removed .change__type { color: var(--cancel); }
 .change--modified .change__type { color: var(--changed); }
 .change s { color: var(--text-muted); }
+.changes__actions { display: flex; align-items: center; gap: 8px; }
+/* change log page: one list per lesson day, unseen changes get the side bar */
+.changeday { margin-bottom: 20px; }
+.changeday .month__title { display: flex; align-items: center; gap: 8px; }
+.changeday .change { position: relative; grid-template-columns: 150px 80px 1fr auto; }
+.changeday .change:first-child { border-top: 0; }
+.changeday--past { opacity: .6; }
+.changeday--today .month__title { color: var(--accent); }
+.change__detected { color: var(--text-muted); font-size: .85rem; white-space: nowrap; }
+.changeday .change--unseen { background: var(--changed-soft); box-shadow: inset 3px 0 0 var(--changed-border); }
+.inline-form { display: contents; }
 
 /* ---------- timetable (desktop grid) ---------- */
 .timetable {
@@ -505,6 +516,8 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
     .daylist { display: block; }
     .change { grid-template-columns: 1fr auto; }
     .change__what { grid-column: 1 / -1; }
+    .changeday .change { grid-template-columns: 1fr auto; }
+    .change__detected { grid-column: 1 / -1; }
     .absence { grid-template-columns: 1fr auto; grid-template-areas: "date state" "span state" "remark remark"; }
     .entry { grid-template-columns: 110px 1fr; }
 }

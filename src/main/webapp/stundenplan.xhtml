@@ -47,9 +47,12 @@
                 <section class="changes" aria-label="#{msg['timetable.changes']}">
                     <div class="changes__head">
                         <h2>#{timetableController.changes.size() == 1 ? msg['timetable.changesOne'] : i18n.format('timetable.changesMany', timetableController.changes.size())}</h2>
-                        <h:form>
-                            <h:commandButton value="#{msg['timetable.seen']}" action="#{timetableController.markSeen}" styleClass="btn btn--small"/>
-                        </h:form>
+                        <div class="changes__actions">
+                            <a class="btn btn--ghost btn--small" href="#{request.contextPath}/aenderungen.xhtml">#{msg['changes.showAll']}</a>
+                            <h:form>
+                                <h:commandButton value="#{msg['timetable.seen']}" action="#{timetableController.markSeen}" styleClass="btn btn--small"/>
+                            </h:form>
+                        </div>
                     </div>
                     <ul class="changes__list">
                         <ui:repeat value="#{timetableController.changes}" var="c">

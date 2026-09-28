@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                template="/WEB-INF/templates/layout.xhtml">
+    <ui:param name="page" value="aenderungen"/>
+    <ui:define name="title">#{msg['changes.title']}</ui:define>
+
+    <ui:define name="content">
+        <div class="toolbar">
+            <h1 class="toolbar__title">#{msg['changes.heading']}</h1>
+            <div class="weeknav">
+                <h:outputLink value="aenderungen.xhtml" styleClass="btn #{changesController.showPast ? '' : 'btn--active'}">#{msg['changes.fromToday']}</h:outputLink>
+                <h:outputLink value="aenderungen.xhtml?past=1" styleClass="btn #{changesController.showPast ? 'btn--active' : ''}">#{msg['changes.all']}</h:outputLink>
+                <h:form rendered="#{changesController.hasUnseen}" styleClass="inline-form">
+                    <ui:fragment rendered="#{changesController.showPast}"><input type="hidden" name="past" value="1"/></ui:fragment>
+                    <h:commandButton value="#{msg['timetable.seen']}" action="#{changesController.markSeen}" styleClass="btn"/>
+                </h:form>
+            </div>
+        </div>
+
+        <ui:fragment rendered="#{not status.hasClass}">
+            <section class="empty"><p>#{msg['timetable.noDataText']}</p></section>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{status.hasClass and empty changesController.days}">
+            <section class="empty"><p>#{changesController.showPast ? msg['changes.emptyAll'] : msg['changes.empty']}</p></section>
+        </ui:fragment>
+
+        <ui:repeat value="#{changesController.days}" var="d">
+            <section class="#{d.cssClass}">
+                <h2 class="month__title">
+                    #{d.title}
+                    <ui:fragment rendered="#{d.today}"><span class="chip chip--accent">#{msg['timetable.today']}</span></ui:fragment>
+                </h2>
+                <ul class="changes__list month__list">
+                    <ui:repeat value="#{d.changes}" var="c">
+                        <li class="#{c.cssClass}">
+                            <span class="change__when">#{c.periodLabel}</span>
+                            <span class="change__type">#{c.typeLabel}</span>
+                            <span class="change__what">
+                                <ui:fragment rendered="#{not empty c.before and not empty c.after}"><s>#{c.before}</s> → #{c.after}</ui:fragment>
+                                <ui:fragment rendered="#{empty c.before}">#{c.after}</ui:fragment>
+                                <ui:fragment rendered="#{empty c.after}"><s>#{c.before}</s></ui:fragment>
+                            </span>
+                            <span class="change__detected">#{i18n.format('changes.detected', c.detectedLabel)}</span>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </section>
+        </ui:repeat>
+    </ui:define>
+</ui:composition>
