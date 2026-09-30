@@ -32,6 +32,7 @@
                 <a class="nav__link #{page eq 'aenderungen' ? 'is-active' : ''}" href="#{request.contextPath}/aenderungen.xhtml">#{msg['nav.changes']}</a>
                 <a class="nav__link #{page eq 'termine' ? 'is-active' : ''}" href="#{request.contextPath}/termine.xhtml">#{msg['nav.calendar']}</a>
                 <a class="nav__link #{page eq 'fehlzeiten' ? 'is-active' : ''}" href="#{request.contextPath}/fehlzeiten.xhtml">#{msg['nav.absences']}</a>
+                <a class="nav__link #{page eq 'pride' ? 'is-active' : ''}" href="#{request.contextPath}/pride.xhtml">#{msg['nav.pride']}</a>
                 <h:outputLink rendered="#{status.admin}" styleClass="nav__link #{page eq 'admin' ? 'is-active' : ''}" value="#{request.contextPath}/admin.xhtml">#{msg['nav.admin']}</h:outputLink>
             </nav>
 

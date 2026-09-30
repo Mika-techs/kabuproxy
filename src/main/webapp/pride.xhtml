@@ -1,0 +1,148 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                template="/WEB-INF/templates/layout.xhtml">
+    <ui:param name="page" value="pride"/>
+    <ui:define name="title">#{msg['pride.title']}</ui:define>
+
+    <!-- flags are 3:2 SVGs, one unit per stripe: viewBox width = 1.5 × stripe count -->
+    <ui:define name="content">
+        <section class="pride__hero">
+            <svg class="flag flag--hero" viewBox="0 0 7.5 5" shape-rendering="crispEdges" role="img" aria-label="#{msg['pride.flag.trans']}">
+                <rect width="7.5" height="1" y="0" fill="#5BCEFA"/><rect width="7.5" height="1" y="1" fill="#F5A9B8"/>
+                <rect width="7.5" height="1" y="2" fill="#FFFFFF"/><rect width="7.5" height="1" y="3" fill="#F5A9B8"/>
+                <rect width="7.5" height="1" y="4" fill="#5BCEFA"/>
+            </svg>
+            <h1 class="pride__slogan">#{msg['pride.slogan']}</h1>
+        </section>
+
+        <h2 class="pride__welcome">#{msg['pride.welcome']}</h2>
+
+        <section class="flags">
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 9 6" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="9" height="1" y="0" fill="#E40303"/><rect width="9" height="1" y="1" fill="#FF8C00"/>
+                    <rect width="9" height="1" y="2" fill="#FFED00"/><rect width="9" height="1" y="3" fill="#008026"/>
+                    <rect width="9" height="1" y="4" fill="#004DFF"/><rect width="9" height="1" y="5" fill="#750787"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.rainbow']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 9 6" role="img" aria-hidden="true">
+                    <g shape-rendering="crispEdges">
+                        <rect width="9" height="1" y="0" fill="#E40303"/><rect width="9" height="1" y="1" fill="#FF8C00"/>
+                        <rect width="9" height="1" y="2" fill="#FFED00"/><rect width="9" height="1" y="3" fill="#008026"/>
+                        <rect width="9" height="1" y="4" fill="#004DFF"/><rect width="9" height="1" y="5" fill="#750787"/>
+                    </g>
+                    <polygon points="0,0 3,0 6,3 3,6 0,6" fill="#000000"/>
+                    <polygon points="0,0 2.25,0 5.25,3 2.25,6 0,6" fill="#613915"/>
+                    <polygon points="0,0 1.5,0 4.5,3 1.5,6 0,6" fill="#5BCEFA"/>
+                    <polygon points="0,0 0.75,0 3.75,3 0.75,6 0,6" fill="#F5A9B8"/>
+                    <polygon points="0,0 3,3 0,6" fill="#FFFFFF"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.progress']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 7.5 5" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="7.5" height="1" y="0" fill="#5BCEFA"/><rect width="7.5" height="1" y="1" fill="#F5A9B8"/>
+                    <rect width="7.5" height="1" y="2" fill="#FFFFFF"/><rect width="7.5" height="1" y="3" fill="#F5A9B8"/>
+                    <rect width="7.5" height="1" y="4" fill="#5BCEFA"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.trans']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 7.5 5" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="7.5" height="1" y="0" fill="#D52D00"/><rect width="7.5" height="1" y="1" fill="#FF9A56"/>
+                    <rect width="7.5" height="1" y="2" fill="#FFFFFF"/><rect width="7.5" height="1" y="3" fill="#D362A4"/>
+                    <rect width="7.5" height="1" y="4" fill="#A30262"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.lesbian']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 10.5 7" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="10.5" height="1" y="0" fill="#078D70"/><rect width="10.5" height="1" y="1" fill="#26CEAA"/>
+                    <rect width="10.5" height="1" y="2" fill="#98E8C1"/><rect width="10.5" height="1" y="3" fill="#FFFFFF"/>
+                    <rect width="10.5" height="1" y="4" fill="#7BADE2"/><rect width="10.5" height="1" y="5" fill="#5049CC"/>
+                    <rect width="10.5" height="1" y="6" fill="#3D1A78"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.gay']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 7.5 5" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="7.5" height="2" y="0" fill="#D60270"/><rect width="7.5" height="1" y="2" fill="#9B4F96"/>
+                    <rect width="7.5" height="2" y="3" fill="#0038A8"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.bi']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 4.5 3" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="4.5" height="1" y="0" fill="#FF218C"/><rect width="4.5" height="1" y="1" fill="#FFD800"/>
+                    <rect width="4.5" height="1" y="2" fill="#21B1FF"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.pan']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 6 4" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="6" height="1" y="0" fill="#000000"/><rect width="6" height="1" y="1" fill="#A3A3A3"/>
+                    <rect width="6" height="1" y="2" fill="#FFFFFF"/><rect width="6" height="1" y="3" fill="#800080"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.ace']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 7.5 5" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="7.5" height="1" y="0" fill="#3DA542"/><rect width="7.5" height="1" y="1" fill="#A7D379"/>
+                    <rect width="7.5" height="1" y="2" fill="#FFFFFF"/><rect width="7.5" height="1" y="3" fill="#A9A9A9"/>
+                    <rect width="7.5" height="1" y="4" fill="#000000"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.aro']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 9 6" role="img" aria-hidden="true">
+                    <g shape-rendering="crispEdges">
+                        <rect width="9" height="2.5" y="0" fill="#FFFFFF"/><rect width="9" height="1" y="2.5" fill="#6E0070"/>
+                        <rect width="9" height="2.5" y="3.5" fill="#D2D2D2"/>
+                    </g>
+                    <polygon points="0,0 3,3 0,6" fill="#000000"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.demi']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 6 4" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="6" height="1" y="0" fill="#FCF434"/><rect width="6" height="1" y="1" fill="#FFFFFF"/>
+                    <rect width="6" height="1" y="2" fill="#9C59D1"/><rect width="6" height="1" y="3" fill="#2C2C2C"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.nonbinary']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 7.5 5" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="7.5" height="1" y="0" fill="#FF76A4"/><rect width="7.5" height="1" y="1" fill="#FFFFFF"/>
+                    <rect width="7.5" height="1" y="2" fill="#C011D7"/><rect width="7.5" height="1" y="3" fill="#000000"/>
+                    <rect width="7.5" height="1" y="4" fill="#2F3CBE"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.genderfluid']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 4.5 3" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="4.5" height="1" y="0" fill="#B57EDC"/><rect width="4.5" height="1" y="1" fill="#FFFFFF"/>
+                    <rect width="4.5" height="1" y="2" fill="#4A8123"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.genderqueer']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 10.5 7" shape-rendering="crispEdges" role="img" aria-hidden="true">
+                    <rect width="10.5" height="1" y="0" fill="#000000"/><rect width="10.5" height="1" y="1" fill="#B9B9B9"/>
+                    <rect width="10.5" height="1" y="2" fill="#FFFFFF"/><rect width="10.5" height="1" y="3" fill="#B8F483"/>
+                    <rect width="10.5" height="1" y="4" fill="#FFFFFF"/><rect width="10.5" height="1" y="5" fill="#B9B9B9"/>
+                    <rect width="10.5" height="1" y="6" fill="#000000"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.agender']}</figcaption>
+            </figure>
+            <figure class="flagcard">
+                <svg class="flag" viewBox="0 0 9 6" role="img" aria-hidden="true">
+                    <rect width="9" height="6" fill="#FFD800"/>
+                    <circle cx="4.5" cy="3" r="1.45" fill="none" stroke="#7902AA" stroke-width="0.55"/>
+                </svg>
+                <figcaption>#{msg['pride.flag.intersex']}</figcaption>
+            </figure>
+        </section>
+    </ui:define>
+</ui:composition>

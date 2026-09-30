@@ -513,6 +513,16 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 .demo--holiday { background: var(--holiday-soft); color: var(--holiday); }
 .demo--muted { color: var(--text-muted); font-weight: 400; }
 
+/* ---------- pride ---------- */
+.pride__hero { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 16px 0 8px; text-align: center; }
+.pride__slogan { font-size: clamp(1.6rem, 5vw, 2.6rem); font-weight: 750; }
+.pride__welcome { margin: 28px 0 14px; font-size: 1.2rem; text-align: center; }
+.flags { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+.flagcard { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.flagcard figcaption { font-weight: 600; text-align: center; }
+.flag { display: block; width: 100%; aspect-ratio: 3 / 2; border-radius: 6px; box-shadow: 0 0 0 1px var(--border), var(--shadow); }
+.flag--hero { width: min(360px, 100%); border-radius: 10px; }
+
 /* ---------- footer ---------- */
 .footer {
     max-width: 1280px; margin: 0 auto; padding: 8px 16px 28px;
