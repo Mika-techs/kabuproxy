@@ -27,6 +27,7 @@ public class TimetableController
     @Inject private StatusController status;
     @Inject private TimetableQueryService queryService;
     @Inject private UserService userService;
+    @Inject private ThemeController theme;
 
     @Getter private WeekView week;
     @Getter private List<ChangeView> changes = List.of();
@@ -41,7 +42,7 @@ public class TimetableController
             return;
         }
         long classId = status.getAccount().classId();
-        week = queryService.loadWeek(classId, requestedMonday());
+        week = queryService.loadWeek(classId, requestedMonday(), theme.getSettings()::lessonHidden);
         changes = queryService.changesSince(classId, userService.changesSeenAt(userSession.getUserId()));
     }
 

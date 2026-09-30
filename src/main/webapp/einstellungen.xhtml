@@ -126,11 +126,11 @@
                 <h:panelGroup rendered="#{not empty settingsController.lessonRows}">
                     <table class="colors lesson-colors">
                         <thead>
-                            <tr><th scope="col">#{msg['settings.subjectColumn']}</th><th scope="col">#{msg['settings.nameColumn']}</th><th scope="col">#{msg['settings.colorColumn']}</th><th scope="col"><span class="skip">#{msg['settings.reset']}</span></th></tr>
+                            <tr><th scope="col">#{msg['settings.subjectColumn']}</th><th scope="col">#{msg['settings.nameColumn']}</th><th scope="col">#{msg['settings.colorColumn']}</th><th scope="col"><span class="skip">#{msg['settings.reset']}</span></th><th scope="col">#{msg['settings.shownColumn']}</th></tr>
                         </thead>
                         <tbody>
                             <ui:repeat value="#{settingsController.lessonRows}" var="r">
-                                <tr class="#{r.teacherRow ? 'lesson-colors__teacher' : ''}" data-subject="#{r.subject}" data-teacher="#{r.teacher}">
+                                <tr class="#{r.teacherRow ? 'lesson-colors__teacher' : ''} #{settingsController.rowHidden(r) ? 'is-hidden' : ''}" data-subject="#{r.subject}" data-teacher="#{r.teacher}">
                                     <td>
                                         <span class="demo demo--lesson" style="#{settingsController.lessonStyle(r)}">
                                             #{r.teacherRow ? r.teacher : r.subject}<ui:fragment rendered="#{r.teacherRow}"> <span class="muted">· #{r.subject}</span></ui:fragment>
@@ -152,6 +152,11 @@
                                                 aria-label="#{i18n.format('settings.colorReset', r.teacherRow ? r.subject.concat(' · ').concat(r.teacher) : r.subject)}">
                                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/></svg>
                                         </button>
+                                    </td>
+                                    <td>
+                                        <!-- unchecked = left out of the timetable; a subject row hides all of its teacher rows too -->
+                                        <h:selectBooleanCheckbox value="#{r.shown}" styleClass="lesson-shown"
+                                                                 a:aria-label="#{r.teacherRow ? i18n.format('settings.teacherShownLabel', r.subject, r.teacher) : i18n.format('settings.lessonShownLabel', r.subject)}"/>
                                     </td>
                                 </tr>
                             </ui:repeat>

@@ -506,6 +506,8 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 .lesson-colors__teacher td { border-top-style: dashed; }
 .lesson-colors__teacher td:first-child { padding-left: 22px; }
 .lesson-colors__teacher .demo--lesson { font-weight: 550; }
+.lesson-colors .lesson-shown { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+.lesson-colors tr.is-hidden td:not(:last-child) { opacity: .45; }
 .demo--cancel { background: var(--cancel-soft); color: var(--cancel); }
 .demo--ok { background: var(--ok-soft); color: var(--ok); }
 .demo--holiday { background: var(--holiday-soft); color: var(--holiday); }

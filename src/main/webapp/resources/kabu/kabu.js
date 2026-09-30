@@ -121,6 +121,14 @@
             row.querySelector('.lesson-picker').value = color || (picker ? picker.value : DEFAULT_ACCENT);
         });
     }
+    function refreshLessonShown() {
+        lessonRows.forEach(function (row) {
+            var parent = row.dataset.teacher ? subjectRow(row) : null;
+            var hidden = !row.querySelector('.lesson-shown').checked
+                || (parent && !parent.querySelector('.lesson-shown').checked);
+            row.classList.toggle('is-hidden', !!hidden);
+        });
+    }
     lessonRows.forEach(function (row) {
         var lessonPicker = row.querySelector('.lesson-picker');
         var field = row.querySelector('.lesson-color');
@@ -132,6 +140,8 @@
             field.value = '';
             refreshLessonColors();
         });
+        // an unticked subject hides its teacher rows too: dim them along with it
+        row.querySelector('.lesson-shown').addEventListener('change', refreshLessonShown);
         // an empty teacher name shows the subject's name: keep the teacher rows' placeholders in step
         if (!row.dataset.teacher) {
             var name = row.querySelector('.lesson-name');

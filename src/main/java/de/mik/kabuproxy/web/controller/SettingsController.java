@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +76,7 @@ public class SettingsController implements Serializable
         lessonRows = buildLessonRows(settings);
         fillLessonColors(settings);
         fillLessonNames(settings);
+        fillHiddenLessons(settings);
     }
 
     private List<LessonRow> buildLessonRows(UserSettings settings)
@@ -87,6 +89,7 @@ public class SettingsController implements Serializable
         Map<String, TreeSet<String>> storedTeachers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         Set<LessonKey> storedKeys = new TreeSet<>(settings.lessonColors().keySet());
         storedKeys.addAll(settings.lessonNames().keySet());
+        storedKeys.addAll(settings.hiddenLessons());
         for (LessonKey key : storedKeys)
         {
             teachers.computeIfAbsent(key.getSubject(), k -> teacherSet(List.of()));
@@ -100,7 +103,7 @@ public class SettingsController implements Serializable
         {
             rows.add(new LessonRow(subject, ""));
             TreeSet<String> stored = storedTeachers.getOrDefault(subject, teacherSet(List.of()));
-            // a single teacher needs no own row - unless a colour or name for them is still stored
+            // a single teacher needs no own row - unless a colour, name or hidden flag for them is still stored
             if (names.size() > 1 || !stored.isEmpty())
             {
                 TreeSet<String> all = teacherSet(names);
@@ -128,6 +131,11 @@ public class SettingsController implements Serializable
         lessonRows.forEach(row -> row.setName(settings.lessonNames().getOrDefault(row.key(), "")));
     }
 
+    private void fillHiddenLessons(UserSettings settings)
+    {
+        lessonRows.forEach(row -> row.setShown(!settings.hiddenLessons().contains(row.key())));
+    }
+
     /**
      * Placeholder of a row's name field, i.e. what the timetable shows while it is empty: the subject, for a teacher row
      * the subject row's name if it has one.
@@ -145,6 +153,19 @@ public class SettingsController implements Serializable
             .map(String::strip)
             .filter(name -> !name.isEmpty())
             .orElse(row.getSubject());
+    }
+
+    /**
+     * Whether a row's lessons are left out of the timetable: its own checkbox, for a teacher row also the subject's.
+     */
+    public boolean rowHidden(LessonRow row)
+    {
+        if (!row.isShown())
+        {
+            return true;
+        }
+        return row.isTeacherRow() && lessonRows.stream()
+            .anyMatch(r -> !r.isTeacherRow() && r.getSubject().equals(row.getSubject()) && !r.isShown());
     }
 
     /**
@@ -231,18 +252,24 @@ public class SettingsController implements Serializable
         }
         Map<LessonKey, String> lessonColors = new HashMap<>();
         Map<LessonKey, String> lessonNames = new HashMap<>();
+        Set<LessonKey> hiddenLessons = new HashSet<>();
         lessonRows.forEach(row ->
         {
             lessonColors.put(row.key(), row.getColor());
             lessonNames.put(row.key(), row.getName());
+            if (!row.isShown())
+            {
+                hiddenLessons.add(row.key());
+            }
         });
-        UserSettings settings = new UserSettings(mode, color, colors, lessonColors, lessonNames);
+        UserSettings settings = new UserSettings(mode, color, colors, lessonColors, lessonNames, hiddenLessons);
         settingsService.save(userSession.getUserId(), settings);
         themeMode = mode.name();
         accentColor = color;
         fillColors(settings);
         fillLessonColors(settings);
         fillLessonNames(settings);
+        fillHiddenLessons(settings);
         Messages.info("settings.saved");
     }
 
@@ -253,13 +280,15 @@ public class SettingsController implements Serializable
         fillColors(UserSettings.DEFAULT);
         fillLessonColors(UserSettings.DEFAULT);
         fillLessonNames(UserSettings.DEFAULT);
+        fillHiddenLessons(UserSettings.DEFAULT);
         save();
     }
 
     /**
      * A row of the lesson table; {@code color} is the hidden field: {@code #rrggbb}, or empty to follow the subject's
      * colour (teacher row) or the accent (subject row); {@code name} is shown instead of the subject, empty follows the
-     * subject's name (teacher row) or the subject itself. A class, not a record: JSF writes both back.
+     * subject's name (teacher row) or the subject itself; {@code shown} unchecked leaves the subject (teacher row: the
+     * subject with this teacher) out of the timetable. A class, not a record: JSF writes them back.
      */
     @Getter
     public static class LessonRow implements Serializable
@@ -273,6 +302,7 @@ public class SettingsController implements Serializable
         private final String teacher;
         @Setter private String color = "";
         @Setter private String name = "";
+        @Setter private boolean shown = true;
 
         LessonRow(String subject, String teacher)
         {

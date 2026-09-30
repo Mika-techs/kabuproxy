@@ -6,19 +6,22 @@ import de.mik.kabuproxy.persistence.entities.ThemeMode;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
  * A user's UI preferences. {@code accentColor} is either null (built-in accent) or a normalized {@code #rrggbb};
  * {@code colors} maps {@link ThemeColor} keys to normalized colours and only holds the ones that differ from the built-ins;
  * {@code lessonColors} maps a subject, or a subject taught by one teacher, to a normalized colour (see {@link #lessonColor});
- * {@code lessonNames} maps the same keys to the name shown instead of the subject (see {@link #lessonName}).
+ * {@code lessonNames} maps the same keys to the name shown instead of the subject (see {@link #lessonName});
+ * {@code hiddenLessons} holds the same keys for lessons left out of the timetable (see {@link #lessonHidden}).
  */
 public record UserSettings(ThemeMode themeMode, String accentColor, Map<String, String> colors, Map<LessonKey, String> lessonColors,
-                           Map<LessonKey, String> lessonNames)
+                           Map<LessonKey, String> lessonNames, Set<LessonKey> hiddenLessons)
 {
-    public static final UserSettings DEFAULT = new UserSettings(ThemeMode.SYSTEM, null, Map.of(), Map.of(), Map.of());
+    public static final UserSettings DEFAULT = new UserSettings(ThemeMode.SYSTEM, null, Map.of(), Map.of(), Map.of(), Set.of());
     public static final String DEFAULT_ACCENT = "#4f46e5";
 
     /**
@@ -39,6 +42,7 @@ public record UserSettings(ThemeMode themeMode, String accentColor, Map<String, 
         colors = sanitize(colors);
         lessonColors = sanitizeLessonColors(lessonColors);
         lessonNames = sanitizeLessonNames(lessonNames);
+        hiddenLessons = sanitizeHiddenLessons(hiddenLessons);
     }
 
     /**
@@ -121,6 +125,25 @@ public record UserSettings(ThemeMode themeMode, String accentColor, Map<String, 
         return Collections.unmodifiableMap(clean);
     }
 
+    /**
+     * Keeps valid keys (trimmed), bounded like the colours.
+     */
+    private static Set<LessonKey> sanitizeHiddenLessons(Set<LessonKey> hiddenLessons)
+    {
+        Set<LessonKey> clean = new TreeSet<>();
+        if (hiddenLessons != null)
+        {
+            hiddenLessons.forEach(key ->
+            {
+                if (validKey(key) && clean.size() < MAX_LESSON_ENTRIES)
+                {
+                    clean.add(new LessonKey(key.getSubject(), key.getTeacher()));
+                }
+            });
+        }
+        return Collections.unmodifiableSet(clean);
+    }
+
     private static boolean validKey(LessonKey key)
     {
         return key != null && !key.getSubject().isEmpty() && key.getSubject().length() <= MAX_KEY_LENGTH
@@ -129,7 +152,7 @@ public record UserSettings(ThemeMode themeMode, String accentColor, Map<String, 
 
     public UserSettings withThemeMode(ThemeMode mode)
     {
-        return new UserSettings(mode, accentColor, colors, lessonColors, lessonNames);
+        return new UserSettings(mode, accentColor, colors, lessonColors, lessonNames, hiddenLessons);
     }
 
     /**
@@ -187,6 +210,18 @@ public record UserSettings(ThemeMode themeMode, String accentColor, Map<String, 
         }
         String name = teacher == null || teacher.isBlank() ? null : lessonNames.get(new LessonKey(subject, teacher));
         return name != null ? name : lessonNames.getOrDefault(LessonKey.of(subject), subject);
+    }
+
+    /**
+     * Whether a lesson is left out of the timetable: its subject is hidden, or the subject with this teacher.
+     */
+    public boolean lessonHidden(String subject, String teacher)
+    {
+        if (subject == null)
+        {
+            return false;
+        }
+        return hiddenLessons.contains(LessonKey.of(subject)) || hiddenLessons.contains(new LessonKey(subject, teacher));
     }
 
     /**

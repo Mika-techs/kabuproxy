@@ -19,6 +19,7 @@ Hibernate 7 · Liquibase · MySQL 8 · log4j2 · Lombok · Jsoup.
   subject → accent colour, lightened in dark mode)
 - Own display names per subject or subject + teacher, e.g. "AEuP" taught by RAH → "Web" (one digikabu subject that is
   really several)
+- Hide subjects, or a subject with one teacher, from the timetable (e.g. an elective you don't attend)
 - Changes (Änderung, new/cancelled lessons) highlighted, plus "N changes since your last visit"
 - **Änderungen** page: the whole change log of the class per lesson day (from today or all), unseen changes marked
 - History: digikabu only shows ±1 week, kabuProxy keeps every week it has seen

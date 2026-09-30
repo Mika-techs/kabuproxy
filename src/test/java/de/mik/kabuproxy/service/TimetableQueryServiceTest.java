@@ -92,7 +92,7 @@ class TimetableQueryServiceTest
         Map<Integer, PeriodView> breaks = Map.of(3, new PeriodView(3, 4, true, "10:00", "10:15", "11:00"));
         List<LessonEntity> lessons = List.of(lesson(1, 1, "D"), lesson(2, 3, "M"), lesson(4, 4, "E"));
 
-        List<LessonView> views = TimetableQueryService.dayViews(lessons, slots, rows, breaks);
+        List<LessonView> views = TimetableQueryService.dayViews(lessons, (subject, teacher) -> false, slots, rows, breaks);
 
         assertEquals(List.of("D", "M", "M", "E"), views.stream().map(LessonView::subject).toList());
         LessonView beforeBreak = views.get(1);
@@ -112,10 +112,34 @@ class TimetableQueryServiceTest
         Map<Integer, PeriodSlotEntity> slots = Map.of(3, slot(3, 10, 15));
         Map<Integer, PeriodView> breaks = Map.of(3, new PeriodView(3, 4, true, "10:00", "10:15", "11:00"));
 
-        List<LessonView> views = TimetableQueryService.dayViews(List.of(lesson(3, 3, "M")), slots, Map.of(3, 4), breaks);
+        List<LessonView> views = TimetableQueryService.dayViews(List.of(lesson(3, 3, "M")), (subject, teacher) -> false, slots, Map.of(3, 4), breaks);
 
         assertEquals(1, views.size());
         assertNull(views.getFirst().breakBefore());
+    }
+
+    @Test
+    void parallelLessonsCloseTheGapOfAHiddenOne()
+    {
+        // periods 1-2: A | B (B hidden) -> A full width; periods 3-4: C | D | E, D hidden -> C and E halves
+        LessonEntity a = lesson(1, 2, "A", 0, 2);
+        LessonEntity b = lesson(1, 2, "B", 1, 2);
+        LessonEntity c = lesson(3, 4, "C", 0, 3);
+        LessonEntity d = lesson(3, 4, "D", 1, 3);
+        LessonEntity e = lesson(3, 4, "E", 2, 3);
+        // period 5: F | G, nothing hidden -> unchanged
+        LessonEntity f = lesson(5, 5, "F", 0, 2);
+        LessonEntity g = lesson(5, 5, "G", 1, 2);
+
+        Map<LessonEntity, TimetableQueryService.Lane> lanes = TimetableQueryService.visibleLanes(List.of(a, b, c, d, e, f, g),
+            (subject, teacher) -> "B".equals(subject) || "D".equals(subject));
+
+        assertEquals(List.of(a, c, e, f, g), List.copyOf(lanes.keySet()));
+        assertEquals(new TimetableQueryService.Lane(0, 1), lanes.get(a));
+        assertEquals(new TimetableQueryService.Lane(0, 2), lanes.get(c));
+        assertEquals(new TimetableQueryService.Lane(1, 2), lanes.get(e));
+        assertEquals(new TimetableQueryService.Lane(0, 2), lanes.get(f));
+        assertEquals(new TimetableQueryService.Lane(1, 2), lanes.get(g));
     }
 
     private static PeriodSlotEntity slot(int period, int hour, int minute)
@@ -135,6 +159,14 @@ class TimetableQueryServiceTest
         lesson.setLaneCount(1);
         lesson.setSubject(subject);
         lesson.setStatus(LessonStatus.REGULAR);
+        return lesson;
+    }
+
+    private static LessonEntity lesson(int from, int to, String subject, int lane, int laneCount)
+    {
+        LessonEntity lesson = lesson(from, to, subject);
+        lesson.setLane(lane);
+        lesson.setLaneCount(laneCount);
         return lesson;
     }
 

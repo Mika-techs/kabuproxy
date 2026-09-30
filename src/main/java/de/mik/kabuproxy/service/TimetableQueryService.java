@@ -30,12 +30,15 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -60,8 +63,11 @@ public class TimetableQueryService
         return today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     }
 
+    /**
+     * @param hidden subject and teacher of the lessons left out (the user's hidden lessons)
+     */
     @Transactional
-    public WeekView loadWeek(long classId, LocalDate monday)
+    public WeekView loadWeek(long classId, LocalDate monday, BiPredicate<String, String> hidden)
     {
         LocalDate friday = monday.plusDays(SCHOOL_DAYS - 1);
         LocalDate today = LocalDate.now(KabuConfig.ZONE);
@@ -99,7 +105,7 @@ public class TimetableQueryService
         for (int i = 0; i < SCHOOL_DAYS; i++)
         {
             LocalDate date = monday.plusDays(i);
-            List<LessonView> lessons = dayViews(lessonsByDay.getOrDefault(date, List.of()), slotByPeriod, rowByPeriod, breaks);
+            List<LessonView> lessons = dayViews(lessonsByDay.getOrDefault(date, List.of()), hidden, slotByPeriod, rowByPeriod, breaks);
             hasLessons |= !lessons.isEmpty();
             CalendarDayEntity calendarDay = calendar.get(date);
             days.add(new DayView(date, date.equals(today), lessons,
@@ -302,25 +308,25 @@ public class TimetableQueryService
     }
 
     /**
-     * The day's lessons, split at breaks so every part gets its own box, time and countdown; ordered by period again.
+     * The day's visible lessons, split at breaks so every part gets its own box, time and countdown; ordered by period again.
      */
-    static List<LessonView> dayViews(List<LessonEntity> lessons, Map<Integer, PeriodSlotEntity> slots, Map<Integer, Integer> rowByPeriod,
-        Map<Integer, PeriodView> breaks)
+    static List<LessonView> dayViews(List<LessonEntity> lessons, BiPredicate<String, String> hidden, Map<Integer, PeriodSlotEntity> slots,
+        Map<Integer, Integer> rowByPeriod, Map<Integer, PeriodView> breaks)
     {
         List<Part> parts = new ArrayList<>();
-        for (LessonEntity lesson : lessons)
+        visibleLanes(lessons, hidden).forEach((lesson, lane) ->
         {
             int from = lesson.getPeriodFrom();
             for (int period = from + 1; period <= lesson.getPeriodTo(); period++)
             {
                 if (breaks.containsKey(period))
                 {
-                    parts.add(new Part(lesson, from, period - 1));
+                    parts.add(new Part(lesson, lane, from, period - 1));
                     from = period;
                 }
             }
-            parts.add(new Part(lesson, from, lesson.getPeriodTo()));
-        }
+            parts.add(new Part(lesson, lane, from, lesson.getPeriodTo()));
+        });
         // stable: parallel lessons keep their lane order
         parts.sort(Comparator.comparingInt(Part::from));
 
@@ -343,6 +349,59 @@ public class TimetableQueryService
         return views;
     }
 
+    /**
+     * The visible lessons with their lanes, in the order given. Parallel lessons that overlap a hidden one close the gap it
+     * leaves: their lanes are renumbered among the visible lessons they overlap with (a lesson alone gets the full width).
+     * Entities stay untouched, they are managed.
+     */
+    static Map<LessonEntity, Lane> visibleLanes(List<LessonEntity> lessons, BiPredicate<String, String> hidden)
+    {
+        List<LessonEntity> hiddenLessons = new ArrayList<>();
+        List<LessonEntity> visible = new ArrayList<>();
+        lessons.forEach(lesson -> (hidden.test(lesson.getSubject(), lesson.getTeacher()) ? hiddenLessons : visible).add(lesson));
+        Map<LessonEntity, Lane> lanes = new LinkedHashMap<>();
+        visible.forEach(lesson -> lanes.put(lesson, new Lane(lesson.getLane(), lesson.getLaneCount())));
+        if (hiddenLessons.isEmpty())
+        {
+            return lanes;
+        }
+        Set<LessonEntity> done = new HashSet<>();
+        for (LessonEntity start : visible)
+        {
+            if (done.contains(start))
+            {
+                continue;
+            }
+            // the visible lessons connected to this one by overlapping periods
+            List<LessonEntity> group = new ArrayList<>(List.of(start));
+            done.add(start);
+            for (int i = 0; i < group.size(); i++)
+            {
+                LessonEntity current = group.get(i);
+                for (LessonEntity other : visible)
+                {
+                    if (!done.contains(other) && overlap(current, other))
+                    {
+                        group.add(other);
+                        done.add(other);
+                    }
+                }
+            }
+            boolean gap = group.stream().anyMatch(lesson -> hiddenLessons.stream().anyMatch(h -> overlap(lesson, h)));
+            if (gap)
+            {
+                List<Integer> used = group.stream().map(LessonEntity::getLane).distinct().sorted().toList();
+                group.forEach(lesson -> lanes.put(lesson, new Lane(used.indexOf(lesson.getLane()), used.size())));
+            }
+        }
+        return lanes;
+    }
+
+    private static boolean overlap(LessonEntity a, LessonEntity b)
+    {
+        return a.getPeriodFrom() <= b.getPeriodTo() && b.getPeriodFrom() <= a.getPeriodTo();
+    }
+
     private static LessonView toView(Part part, Map<Integer, PeriodSlotEntity> slots, Map<Integer, Integer> rowByPeriod, String breakBefore)
     {
         LessonEntity lesson = part.lesson();
@@ -350,14 +409,21 @@ public class TimetableQueryService
         PeriodSlotEntity last = slots.get(part.to());
         String time = first == null || last == null ? "" : Formats.time(first.getStartTime()) + "–" + Formats.time(last.getEndTime());
         return new LessonView(part.from(), part.to(), rowByPeriod.getOrDefault(part.from(), part.from()),
-            rowByPeriod.getOrDefault(part.to(), part.to()), lesson.getLane(), lesson.getLaneCount(), lesson.getSubject(), lesson.getTeacher(),
+            rowByPeriod.getOrDefault(part.to(), part.to()), part.lane().lane(), part.lane().count(), lesson.getSubject(), lesson.getTeacher(),
             lesson.getRoom(), lesson.getStatus(), lesson.getHint(), lesson.getNote(), time, breakBefore);
     }
 
     /**
      * The periods {@code from}..{@code to} of a lesson, between two breaks.
      */
-    private record Part(LessonEntity lesson, int from, int to)
+    private record Part(LessonEntity lesson, Lane lane, int from, int to)
+    {
+    }
+
+    /**
+     * Column of a lesson among {@code count} parallel ones.
+     */
+    record Lane(int lane, int count)
     {
     }
 }

@@ -16,7 +16,9 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Per-user UI preferences; a missing row means all defaults.
@@ -62,6 +64,13 @@ public class UserSettingsEntity
     @CollectionTable(name = "user_lesson_name", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "display_name", nullable = false)
     private Map<LessonKey, String> lessonNames = new HashMap<>();
+
+    /**
+     * Subjects (+ teachers) left out of the timetable; lazy like the names.
+     */
+    @ElementCollection
+    @CollectionTable(name = "user_lesson_hidden", joinColumns = @JoinColumn(name = "user_id"))
+    private Set<LessonKey> hiddenLessons = new HashSet<>();
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
