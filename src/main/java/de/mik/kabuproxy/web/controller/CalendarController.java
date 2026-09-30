@@ -43,7 +43,6 @@ public class CalendarController
         upcomingExams = months.stream()
             .flatMap(m -> m.entries().stream())
             .filter(e -> e.exam() && !e.past())
-            .limit(3)
             .toList();
     }
 }
