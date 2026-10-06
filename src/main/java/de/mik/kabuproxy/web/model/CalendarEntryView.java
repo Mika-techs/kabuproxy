@@ -37,6 +37,11 @@ public record CalendarEntryView(LocalDate from, LocalDate to, DayKind kind, Stri
 
     public boolean exam()
     {
-        return kind == DayKind.SCHOOL && !schoolRange && text != null && EXAM.matcher(text).find();
+        return kind == DayKind.SCHOOL && !schoolRange && isExam(text);
+    }
+
+    public static boolean isExam(String text)
+    {
+        return text != null && EXAM.matcher(text).find();
     }
 }

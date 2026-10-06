@@ -41,6 +41,19 @@ public record DayView(LocalDate date, boolean today, List<LessonView> lessons, D
         return kind == DayKind.HOLIDAY || kind == DayKind.NO_SCHOOL;
     }
 
+    /**
+     * Calendar entry shown in the day header (exam, event); free days show it as their label instead.
+     */
+    public String event()
+    {
+        return free() ? null : calendarText;
+    }
+
+    public boolean exam()
+    {
+        return kind == DayKind.SCHOOL && CalendarEntryView.isExam(calendarText);
+    }
+
     public String freeLabel()
     {
         if (calendarText != null)

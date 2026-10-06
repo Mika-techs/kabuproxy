@@ -90,6 +90,9 @@
                     <div class="timetable__dayhead #{d.today ? 'is-today' : ''}">
                         <span class="dayhead__name">#{d.weekday}</span>
                         <span class="dayhead__date">#{d.dateLabel}</span>
+                        <ui:fragment rendered="#{not empty d.event}">
+                            <span class="dayhead__event #{d.exam ? 'is-exam' : ''}" title="#{d.event}">#{d.event}</span>
+                        </ui:fragment>
                     </div>
                 </ui:repeat>
 
@@ -138,6 +141,9 @@
                             <span class="muted">#{d.dateLabel}</span>
                             <ui:fragment rendered="#{d.today}"><span class="chip chip--accent">#{msg['timetable.today']}</span></ui:fragment>
                         </h2>
+                        <ui:fragment rendered="#{not empty d.event}">
+                            <p class="daycard__event #{d.exam ? 'is-exam' : ''}">#{d.event}</p>
+                        </ui:fragment>
                         <ui:fragment rendered="#{d.free}">
                             <p class="daycard__free">#{d.freeLabel}</p>
                         </ui:fragment>

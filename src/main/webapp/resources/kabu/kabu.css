@@ -284,13 +284,15 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
     box-shadow: var(--shadow);
 }
 .timetable__dayhead {
-    display: flex; align-items: baseline; gap: 8px;
-    padding: 6px 8px 10px; border-bottom: 2px solid transparent;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px;
+    padding: 6px 8px 10px; border-bottom: 2px solid transparent; min-width: 0;
 }
 .timetable__dayhead.is-today { border-bottom-color: var(--accent); }
 .dayhead__name { font-weight: 650; }
 .dayhead__date { color: var(--text-muted); font-size: .9rem; }
 .timetable__dayhead.is-today .dayhead__name { color: var(--accent); }
+.dayhead__event { flex-basis: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .78rem; font-weight: 650; color: var(--text-muted); }
+.dayhead__event.is-exam, .daycard__event.is-exam { color: var(--cancel); }
 
 .timetable__times, .timetable__day { display: grid; gap: 4px; padding-top: 8px; }
 .timetable__day { grid-template-columns: repeat(6, minmax(0, 1fr)); border-radius: 10px; }
@@ -370,6 +372,8 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
 .daycard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; box-shadow: var(--shadow); scroll-margin-top: 70px; }
 .daycard.is-today { border-color: var(--accent); }
 .daycard__head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; font-size: 1.02rem; border-bottom: 1px solid var(--border); }
+.daycard__event { margin: 0; padding: 8px 14px; font-size: .88rem; font-weight: 650; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.daycard__event.is-exam { background: var(--cancel-soft); }
 .daycard__free { margin: 0; padding: 14px; color: var(--text-muted); }
 .daycard__list { list-style: none; margin: 0; padding: 0; }
 .daycard__list .lesson {
