@@ -366,6 +366,7 @@ code { background: var(--surface-2); padding: .1em .35em; border-radius: 5px; }
     font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
     background: var(--accent); color: var(--accent-text); padding: 1px 6px; border-radius: 999px;
 }
+:lang(en) .lesson.is-now::after { content: "now"; }
 
 /* ---------- day list (mobile) ---------- */
 .daylist { display: none; }
