@@ -42,6 +42,25 @@ class ExamPlanParserTest
     }
 
     @Test
+    void acceptsMonthWithReplacementCharacter() throws Exception
+    {
+        String html = "<table class=\"saplan\">"
+            + "<tr><td colspan=\"3\"><h4>M&#xFFFD;rz 2027</h4></td></tr>"
+            + "<tr><td>1.3.</td><td>Mo</td><td>SchA ITP</td></tr>"
+            + "</table>";
+        List<ParsedCalendarDay> days = ExamPlanParser.parse(html);
+        assertEquals(LocalDate.of(2027, 3, 1), days.get(0).date());
+        assertEquals("SchA ITP", days.get(0).text());
+    }
+
+    @Test
+    void rejectsUnknownMonthHeader()
+    {
+        String html = "<table class=\"saplan\"><tr><td colspan=\"3\"><h4>Foo 2027</h4></td></tr></table>";
+        assertThrows(DigikabuException.ParseFailed.class, () -> ExamPlanParser.parse(html));
+    }
+
+    @Test
     void rejectsPageWithoutTable()
     {
         assertThrows(DigikabuException.ParseFailed.class, () -> ExamPlanParser.parse("<html><body>Wartung</body></html>"));

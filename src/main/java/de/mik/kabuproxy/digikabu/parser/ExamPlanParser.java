@@ -20,11 +20,13 @@ import java.util.regex.Pattern;
 /**
  * Parses {@code GET /SchulaufgabenPlan}: one table row per calendar day, grouped by "September 2026" month headers.
  * Row class {@code feiertag} = holiday, {@code keinunterr} = no school for this class ("***").
+ * digikabu sends "März" as {@code M&#xFFFD;rz}, so U+FFFD in a month name matches any letter.
  */
 public final class ExamPlanParser
 {
-    private static final Pattern MONTH_HEADER = Pattern.compile("^(\\p{L}+)\\s+(\\d{4})$");
+    private static final Pattern MONTH_HEADER = Pattern.compile("^([\\p{L}\\uFFFD]+)\\s+(\\d{4})$");
     private static final Pattern DAY = Pattern.compile("^(\\d{1,2})\\.(\\d{1,2})\\.?$");
+    private static final char REPLACEMENT_CHAR = '\uFFFD';
     private static final String NO_SCHOOL_PLACEHOLDER = "***";
     private static final Map<String, Month> MONTHS = Map.ofEntries(
         Map.entry("januar", Month.JANUARY),
@@ -95,11 +97,32 @@ public final class ExamPlanParser
     private static int parseYear(String header, String html) throws DigikabuException.ParseFailed
     {
         Matcher matcher = MONTH_HEADER.matcher(header.trim());
-        if (!matcher.matches() || !MONTHS.containsKey(matcher.group(1).toLowerCase(Locale.GERMAN)))
+        if (!matcher.matches() || !isMonthName(matcher.group(1).toLowerCase(Locale.GERMAN)))
         {
             throw new DigikabuException.ParseFailed("exam plan month header not understood: " + header, null, html);
         }
         return Integer.parseInt(matcher.group(2));
+    }
+
+    private static boolean isMonthName(String name)
+    {
+        return MONTHS.keySet().stream().anyMatch(month -> matchesIgnoringReplacementChars(month, name));
+    }
+
+    private static boolean matchesIgnoringReplacementChars(String expected, String actual)
+    {
+        if (expected.length() != actual.length())
+        {
+            return false;
+        }
+        for (int i = 0; i < expected.length(); i++)
+        {
+            if (actual.charAt(i) != REPLACEMENT_CHAR && actual.charAt(i) != expected.charAt(i))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static DayKind kindOf(Element row)
