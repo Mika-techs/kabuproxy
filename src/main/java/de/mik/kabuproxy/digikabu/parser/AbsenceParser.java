@@ -21,7 +21,10 @@ import java.util.regex.Pattern;
 public final class AbsenceParser
 {
     private static final Pattern SUMMARY = Pattern.compile("^(\\d+)\\s*(?:\\(davon\\s+(\\d+)\\s+unentschuldigt\\))?");
-    private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    /**
+     * digikabu used German dates and switched to US-style ones in November 2026; accept both.
+     */
+    private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("[dd.MM.yyyy][MM/dd/yyyy]");
     private static final int DETAIL_COLUMNS = 6;
     private static final int COL_DATE = 0;
     private static final int COL_FROM = 1;
@@ -86,7 +89,8 @@ public final class AbsenceParser
             }
             catch (DateTimeParseException e)
             {
-                throw new DigikabuException.ParseFailed("absence date not understood: " + row.text(), null, html);
+                // only the date cell - the row holds the absence reason, which must not reach logs or admins
+                throw new DigikabuException.ParseFailed("absence date not understood: " + cells.get(COL_DATE).text(), null, html);
             }
             entries.add(new ParsedAbsence(
                 date,

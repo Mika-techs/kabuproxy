@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,6 +24,21 @@ class AbsenceParserTest
         assertEquals(0, absences.hoursUnexcused());
         assertEquals(1, absences.entries().size());
         assertEquals(new ParsedAbsence(LocalDate.of(2026, 9, 23), "Anfang", "Ende", "Arzttermin", "Fehlzeit", null), absences.entries().getFirst());
+    }
+
+    @Test
+    void acceptsUsDates() throws Exception
+    {
+        String html = Fixtures.load("absences.html").replace("<td>23.09.2026</td>", "<td>09/23/2026</td>");
+        assertEquals(LocalDate.of(2026, 9, 23), AbsenceParser.parse(html).entries().getFirst().date());
+    }
+
+    @Test
+    void keepsAbsenceReasonOutOfDateError() throws Exception
+    {
+        String html = Fixtures.load("absences.html").replace("<td>23.09.2026</td>", "<td>2026-09-23</td>");
+        DigikabuException.ParseFailed e = assertThrows(DigikabuException.ParseFailed.class, () -> AbsenceParser.parse(html));
+        assertFalse(e.getMessage().contains("Arzttermin"));
     }
 
     @Test
