@@ -1,6 +1,6 @@
 # kabuProxy
 
-A nicer, always-logged-in mirror of [digikabu.de](https://www.digikabu.de) (the timetable portal of BSZ Wiesau).
+A nicer, always-logged-in mirror of [digikabu.de](https://digikabu.de) (the timetable portal of BSZ Wiesau).
 
 A crawler logs in to digikabu on behalf of every linked user, stores the **timetable, exam plan (Schulaufgabenplan)
 and absences (Fehlzeiten)** in MySQL, and serves them through its own UI. Login goes through **Authentik (OIDC)**,
@@ -102,7 +102,7 @@ Authentik setup: **[docs/AUTHENTIK.md](docs/AUTHENTIK.md)**.
 | `KABU_CRAWL_INTERVAL_MINUTES` | `30` | |
 | `KABU_CRAWL_ACTIVE_FROM` / `_TO` | `06:00` / `22:00` | Europe/Berlin |
 | `KABU_REFRESH_COOLDOWN_MINUTES` | `5` | rate limit of the "Jetzt aktualisieren" button |
-| `KABU_DIGIKABU_BASE_URL` | `https://www.digikabu.de` | |
+| `KABU_DIGIKABU_BASE_URL` | `https://digikabu.de` | |
 
 ## How crawling works
 

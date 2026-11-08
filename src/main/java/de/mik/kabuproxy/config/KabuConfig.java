@@ -37,7 +37,7 @@ public class KabuConfig
     @Inject @ConfigProperty(name = "kabu.crawl.active.to", defaultValue = "22:00") private String crawlActiveTo;
     @Inject @ConfigProperty(name = "kabu.crawl.request.delay.millis", defaultValue = "400") private long requestDelayMillis;
     @Inject @ConfigProperty(name = "kabu.refresh.cooldown.minutes", defaultValue = "5") private int refreshCooldownMinutes;
-    @Inject @ConfigProperty(name = "kabu.digikabu.base.url", defaultValue = "https://www.digikabu.de") private String digikabuBaseUrl;
+    @Inject @ConfigProperty(name = "kabu.digikabu.base.url", defaultValue = "https://digikabu.de") private String digikabuBaseUrl;
 
     public String getCredKey()
     {
