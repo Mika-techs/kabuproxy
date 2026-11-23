@@ -2,7 +2,7 @@
 #   ./scripts/build-image.sh        (= mvn package + copy hibernate/mysql jars + docker compose build)
 #   or in IntelliJ: run configuration "Docker image"
 # No BuildKit-only syntax here: IntelliJ in a Flatpak may build through the plain Docker API.
-FROM tomee:11.0.0-M1-jre25-alpine-microprofile
+FROM tomee:11.0.0-M2-jre25-alpine-microprofile
 
 ENV TZ="Europe/Berlin"
 

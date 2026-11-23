@@ -81,7 +81,7 @@ docker compose up -d                         # external DB (KABU_DB_* in .env)
 docker compose --profile localdb up -d       # or with the bundled MySQL
 ```
 
-The image is `tomee:11.0.0-M1-jre25-alpine-microprofile` + the war + Hibernate/MySQL jars. The container
+The image is `tomee:11.0.0-M2-jre25-alpine-microprofile` + the war + Hibernate/MySQL jars. The container
 listens on `127.0.0.1:8080` only – put your TLS reverse proxy in front (see docs/AUTHENTIK.md §6). The DB settings
 are applied at container start by `docker/entrypoint.sh`, so any characters are allowed in `KABU_DB_PASSWORD`.
 
